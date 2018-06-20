@@ -27,7 +27,12 @@ type tIdentifier struct {
   vchunk string // Also used to point to tables and apis
 }
 
-
+func str2identifier(s string) *tIdentifier{
+  r:=&tIdentifier {}
+  r.itype = "string"
+  r.vstring = s
+  return r
+}
 
 type identifiermap struct {
     i map[string] *tIdentifier
@@ -74,6 +79,8 @@ func (self *VM) Init(a *API){
   ti:=map[string] *tIdentifier {}
   self.identifiers = &identifiermap{}
   self.identifiers.i = ti
+  self.chunks = map[string] tchunk {}
+  self.calls = []*tcall{}
 }
 
 // Normally every VM creates its own API register, but if you have multiple VMS all using the same API, why bother?

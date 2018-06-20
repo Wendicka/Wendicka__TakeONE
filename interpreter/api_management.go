@@ -62,7 +62,7 @@ func (self *VM) Var_Get(v string) *tIdentifier{
       return self.calls[self.ccall].params.i[dv]
     }
     // If there's nothing else, just return the var if possible
-    value,ok:=self.identifiers[v]
+    value,ok:=self.identifiers.i[v]
     if !ok {return nil}
     return value
 }

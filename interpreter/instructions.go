@@ -56,6 +56,7 @@ func init(){
       switch v {
         case "__ARG":
           w.nextcallparam.i = append(w.nextcallparam.i,id)
+          return true
         default:
           kut:=&w.identifiers.i
           (*kut)[v]=id
