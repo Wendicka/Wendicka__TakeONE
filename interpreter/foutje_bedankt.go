@@ -24,7 +24,7 @@ type thwerror struct {
     f func(er string)
 }
 
-var hwerror map[string] thwerror
+var hwerror = map[string] thwerror{}
 
 func init(){
   hwerror["panic"] = thwerror{
