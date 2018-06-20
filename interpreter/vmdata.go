@@ -78,6 +78,7 @@ func (self *VM) Call(chunk string) (bool,string){
 func (self *VM) Init(a *API){
   if a==nil {
     self.vapi = &API{}
+    self.vapi.Init()
     self.vapi.minapi() // Minimal features all APIs MUST have.
   } else {
     self.vapi = a
