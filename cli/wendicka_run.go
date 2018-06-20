@@ -16,8 +16,8 @@ func main(){
   for i:=1;i<len(os.Args);i++{
     w,e:=wi.File2VM(os.Args[i])
     if e!=nil {
-      fmt.Print("ERROR!")
-      fmt.Print("\t"+e.Error())
+      fmt.Println("ERROR!")
+      fmt.Println("\t"+e.Error())
       os.Exit(1)
     }
     w.Call("MAIN")
