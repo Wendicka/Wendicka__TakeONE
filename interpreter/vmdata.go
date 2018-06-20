@@ -69,6 +69,12 @@ type VM struct{
     lastcallreturn *argquery
 }
 
+func (self *VM) Call(chunk string) (bool,string){
+  rsuccess:=true
+  err:=""
+  return rsuccess,err
+}
+
 func (self *VM) Init(a *API){
   if a==nil {
     self.vapi = &API{}
