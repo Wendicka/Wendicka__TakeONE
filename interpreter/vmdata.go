@@ -44,8 +44,18 @@ type tcall struct{
   returns *argquery
 }
 
+type tchunkins struct {
+  ins byte // refers to instructions
+  param [][]byte
+}
+
+type tchunk struct {
+  instruction []*tchunkins
+}
+
 type VM struct{
-    chunks map[string] []byte
+    //chunks map[string] []byte
+    chunks map[string] tchunk
     vapi *API
     identifiers *identifiermap
     calls [] *tcall

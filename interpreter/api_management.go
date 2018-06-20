@@ -1,17 +1,24 @@
 package wi
 
-import "fmt"
+import (
+  "fmt"
+  "trickyunits/qstr"
+  "strconv"
+)
 
 // Args
 func (self *VM) Arg_Count() int{
+  /*
   i:=0
   for _,ok:=self.identifiers.i[fmt.Sprintf("$__ARG%d",i)];ok;ok=ok {
     i++;
   }
   return i
+  */
+  return len(self.calls[self.ccall].params.i)
 }
 
-func (self *VM) ID_ConvString(id *identifier) string{
+func (self *VM) ID_ConvString(id *tIdentifier) string{
   /*
   ak:=v //fmt.Sprintf("$__ARG%d",i)
   id,ok:=self.identifiers.i[ak]
@@ -37,15 +44,28 @@ func (self *VM) ID_ConvString(id *identifier) string{
 
 func (self *VM) Arg_ConvString(i int) string{
   //ak:=fmt.Sprintf("$__ARG%d",i)
-  ak:=VM.calls[WM.ccall].params.i[i]
+  ak:=self.calls[self.ccall].params.i[i]
   return self.ID_ConvString(ak)
 }
 
-func (self *VM) Var_ConvString(v string){
+func (self *VM) Var_ConvString(v string) string{
   id,ok:=self.identifiers.i[v]
-  if !ok { return "nil" } else { return VM.ID_ConvString(id)}
+  if !ok { return "nil" } else { return self.ID_ConvString(id)}
 }
 
+func (self *VM) Var_Get(v string) *tIdentifier{
+    if qstr.Prefixed(v,"$__GETARG") {
+      d:=v[len("$__GETARG"):]
+      dv, err := strconv.ParseInt(d, 10, 64)
+      if err!=nil { wError(err.Error()); return nil}
+      if dv>=int64(self.Arg_Count()) {return nil}
+      return self.calls[self.ccall].params.i[dv]
+    }
+    // If there's nothing else, just return the var if possible
+    value,ok:=self.identifiers[v]
+    if !ok {return nil}
+    return value
+}
 
 // Minimal APIs
 func wi_api_print(w *VM){
