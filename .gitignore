@@ -3,4 +3,6 @@ MKL*
 bin
 !bin/readme.md
 test*
+.DS_Store
+._*
 
