@@ -20,7 +20,7 @@ func Bytes2VM(l []byte) (*VM,error){
   if bits!=8 { return nil,errors.New(fmt.Sprintf("This version of the Wendicka interpreter only supports 8 bit instructions and this bytecode contains %d bit instructions",bits))}
   for bt.Len()>0 { //!qff.EOF(*bt) {
     ins:=qff.ReadByte(bt)
-    if ins==0 && readchunk=="" { return nil,errors.New("Chunkless code")}
+    if ins!=0 && readchunk=="" { return nil,errors.New(fmt.Sprintf("Chunkless code: %X",ins))}
     switch ins {
       case 0:
         namechunk:=qff.ReadString(bt)
