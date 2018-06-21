@@ -57,6 +57,7 @@ type tcall struct{
   achunk *tchunk
   params *argquery
   returns *argquery
+  ended bool
 }
 
 type tchunk struct {
@@ -90,7 +91,7 @@ func (self *VM) Call(chunk string) (bool,string){
   if !self.callChunk(chunk) { return false,"Call to chunk "+chunk+" failed!"; }
   rsuccess:=true
   err:=""
-  for len(self.calls)>=0{
+  for len(self.calls)>0{
 	  nc:=self.calls[len(self.calls)-1]
       if len(nc.achunk.instruction)<=nc.pos { panic(fmt.Sprintf("Position past chunk end: %d of %d",nc.pos,len(nc.achunk.instruction)))}
       insl:=nc.achunk.instruction[nc.pos]
@@ -100,8 +101,10 @@ func (self *VM) Call(chunk string) (bool,string){
       if !insf { panic( fmt.Sprintf("FATAL INTERNAL ERROR! Unknown instruction code in execution %X/%d\nPlease report",insn,insn));}
       chat("Executing instruction: ",fmt.Sprintf("%d",insn))
       insd.do_it(self,insa)
-      nc.pos++
-      if nc.pos>=len(nc.achunk.instruction) { return false,"Chunk not properly ended";}
+      if !nc.ended{
+		nc.pos++
+		if nc.pos>=len(nc.achunk.instruction) { return false,"Chunk not properly ended";}
+	  }
   }
   return rsuccess,err
 }
@@ -123,6 +126,7 @@ func (self *VM) callAPI(chunk string) (bool,string){
   self.calls = self.calls[:len(self.calls)-1]
   self.ccall = len(self.calls)-1
   self.lastcallreturn = ncall.returns
+  self.nextcallparam = &argquery{}
   return rsuccess,err
 }
 

@@ -92,6 +92,10 @@ func init(){
   // END CALL
   winstructs[0xff] = &winstruct{
     func (w *VM,args [][]byte) bool{
+		cll:=len(w.calls)-1
+		cl:=w.calls[cll]
+		cl.ended=true
+		w.calls=w.calls[:cll]
       return true
     },
     []string{},
