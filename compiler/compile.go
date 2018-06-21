@@ -200,7 +200,14 @@ func Compile_Lines(source []string,f string) ([]byte,error){
               chunklabels=map[string]int{}
             case "LABEL":
               if len(args)<1 { return nil,qe(f,lnum,"LABEL needs a name")}
-              chunklabels[args[0]]=(len(ret)-chunkpos)
+              //chunklabels[args[0]]=(len(ret)-chunkpos)
+              ret = append(ret,254)
+              ret = appstring(ret,args[0])
+            case "JUMP","JMP":
+              if len(args)<1 { return nil,qe(f,lnum,"JUMP needs a label name")}
+              //chunklabels[args[0]]=(len(ret)-chunkpos)
+              ret = append(ret,253)
+              ret = appstring(ret,args[0])              
             case "MOV","MOVE":
               if len(args)<2 { return nil,qe(f,lnum,"MOVE needs 2 parameters")}
               ret = append(ret,1)
