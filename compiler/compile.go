@@ -174,6 +174,7 @@ func Compile_Lines(source []string,f string) ([]byte,error){
          switch(instruction){
             case "CHUNK":
               if len(args)<1 { return nil,qe(f,lnum,"CHUNK needs a name")}
+              if chunkcount>0 { ret=append(ret,0xff); } // Make sure older chunks are always ended before starting a new one.
               ret = append(ret,0)
               ret = appstring(ret,args[0])
               chunk=args[0]

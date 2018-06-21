@@ -71,8 +71,17 @@ func init(){
   // CALL
   winstructs[10] = &winstruct{
     func (w *VM,args [][]byte) bool{
-      return true 
+      return true
     },
     []string{"string"},
+  }
+
+  // END CALL
+  winstructs[0xff] = &winstruct{
+    func (w *VM,args [][]byte) bool{
+      return true
+    },
+    []string{},
+
   }
 }
