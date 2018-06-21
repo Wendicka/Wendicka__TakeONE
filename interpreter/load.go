@@ -55,7 +55,7 @@ func Bytes2VM(l []byte) (*VM,error){
               switch(t){
                 case 0,1: // string + identifiername
                   l:=qff.ReadInt32(bt)
-                  b=appint32(b,l)
+                  //b=appint32(b,l)
                   for i:=int32(0);i<l;i++{ b=append(b,qff.ReadByte(bt));}
                 case 2,3: // int64 + float64
                   for i:=0;i<8;i++{ b=append(b,qff.ReadByte(bt));}
