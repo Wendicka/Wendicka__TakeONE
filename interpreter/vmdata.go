@@ -18,7 +18,8 @@ func (self *API) Init(){
 func (self *API) Register(name string,f (func(v *VM) (bool,string))) {
   q:=self.fs
   (*q)[name] = &apient{}
-
+  qf:=(*q)[name]
+  qf.f=f
 }
 
 type tIdentifier struct {
@@ -110,6 +111,7 @@ func (self *VM) callAPI(chunk string) (bool,string){
   a:=self.vapi.fs
   f,ok:=(*a)[chunk]
   if !ok { return false,"Unknown API called: "+chunk;}
+  if f.f==nil { return false,"API nilfunc in "+chunk}
   rsuccess,err = f.f(self)
   return rsuccess,err
 }

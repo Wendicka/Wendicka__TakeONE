@@ -72,8 +72,8 @@ func init(){
   // CALL
   winstructs[10] = &winstruct{
     func (w *VM,args [][]byte) bool{
-          ch:=string(args[1])
-          if args[1][0]=='$' {
+          ch:=string(args[0])
+          if args[0][0]=='$' {
             id:=w.identifiers.i[ch]
             if id.itype=="chunk" || id.itype=="api" { ch=id.vstring } else {wError("Call identifiers must refer to apis or chunks"); return false}
           }
@@ -81,7 +81,8 @@ func init(){
           if _,ok:=w.chunks[ch];ok {
             w.callChunk(ch)
           } else if _,aok:=(*afs)[ch];aok {
-            w.callAPI(ch)
+            s,e:=w.callAPI(ch)
+            if !s {wError("API Call error: "+e)}
           }
       return true
     },
