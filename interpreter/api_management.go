@@ -68,7 +68,7 @@ func (self *VM) Var_Get(v string) *tIdentifier{
 }
 
 // Minimal APIs
-func wi_api_print(w *VM){
+func wi_api_print(w *VM) (bool,string){
   // declare
   r:=[]string{}
   // form this dline
@@ -84,7 +84,7 @@ func wi_api_print(w *VM){
 
   // Closure
   fmt.Println()
-
+  return true,""
 }
 
 // register

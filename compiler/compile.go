@@ -11,6 +11,17 @@ import "strconv"
 // When set to 'true' the compiler could send out a few messages on screen
 var CHAT = false
 
+var debug = true
+
+
+func dbgprint(a ...string){
+  for i,p:=range a{
+    if i!=0 { fmt.Print("\t");}
+    fmt.Print(p)
+  }
+  fmt.Println()
+}
+
 func eh(f string,l int, er string) string{
   return fmt.Sprintf("%s, line #%d: %s",f,l+1,er)
 }
@@ -149,24 +160,30 @@ func Compile_Lines(source []string,f string) ([]byte,error){
                  }
                  cara = append(cara,byte(a))
                } else {
+                 //fmt.Println(i,ara[i],string(cara)) // debug
                  switch ara[i]{
                     case ',':
                       if !inside{
-                        args=append(args,string(ara))
-                        ara=[]byte{}
+                        args=append(args,string(cara))
+                        cara=[]byte{}
                       }
                     case '"':
                       inside = !inside
+                      cara=append(cara,ara[i])
                     case '#':
                       if inside { dl=3 } else {return nil,errors.New(eh(f,lnum,"# outside string"))}
                     case '\\':
                       if inside { bs=true } else {return nil,errors.New(eh(f,lnum,"\\ outside string"))}
+                    default:
+                      cara=append(cara,ara[i])
+                      //args=append(args,string(ara))
                  }
                }
            }
            if inside { return nil,errors.New(eh(f,lnum,"Not properly ended string")) }
            if bs { return nil,errors.New(eh(f,lnum,"Backslash without follow up")) }
-           args=append(args,string(ara))
+           args=append(args,string(cara))
+           //dbgprint("Added last:",string(cara))
          }
          instruction=strings.ToUpper(instruction)
          if (chunk=="" && instruction!="CHUNK") { return nil,errors.New(eh(f,lnum,"Before any other action is taken a chunk must be created first"))}

@@ -36,7 +36,7 @@ func Bytes2VM(l []byte) (*VM,error){
       case 0:
         namechunk:=qff.ReadString(bt)
         if _,exist:=ret.chunks[namechunk];exist { return nil,errors.New("Duplicate chunk: "+namechunk)}
-        ret.chunks[namechunk]=tchunk{}
+        ret.chunks[namechunk]=&tchunk{}
         readchunk=namechunk
         chat("Created chunk: ",namechunk)
       default:
@@ -62,14 +62,19 @@ func Bytes2VM(l []byte) (*VM,error){
                 default:
                   return nil,errors.New("Invalid identifier type")
               }
+              a = append(a,b)
             default:
               return nil,errors.New(fmt.Sprintf("Unknown paramter type for instruction %X, position %d: %s",ins,i,partype))
           }
         }
-        cc:=tchunkins{}
+        cc:=&tchunkins{}
         cc.param=a
         cc.ins=ins
-        chat("Handled instruction:",fmt.Sprintf("%X",ins))
+        ch:=ret.chunks[readchunk]
+        ch.instruction = append(ch.instruction,cc)
+
+        chat("Handled instruction:",fmt.Sprintf("%X in chunk %s",ins,readchunk))
+
     }
   }
   return ret,e

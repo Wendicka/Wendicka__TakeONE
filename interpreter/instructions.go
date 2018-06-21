@@ -51,6 +51,7 @@ func init(){
         wError("Invalid MOV! "+v)
         return false
       }
+      if len(args)<=1 { wError("No values received to appoint to: "+string(args[0])); return false}
       id,e:=igidentifier(w,args[1])
       if e!=nil { wError(e.Error()); return false;}
       switch v {
@@ -71,6 +72,17 @@ func init(){
   // CALL
   winstructs[10] = &winstruct{
     func (w *VM,args [][]byte) bool{
+          ch:=string(args[1])
+          if args[1][0]=='$' {
+            id:=w.identifiers.i[ch]
+            if id.itype=="chunk" || id.itype=="api" { ch=id.vstring } else {wError("Call identifiers must refer to apis or chunks"); return false}
+          }
+          afs:=w.vapi.fs
+          if _,ok:=w.chunks[ch];ok {
+            w.callChunk(ch)
+          } else if _,aok:=(*afs)[ch];aok {
+            w.callAPI(ch)
+          }
       return true
     },
     []string{"string"},
