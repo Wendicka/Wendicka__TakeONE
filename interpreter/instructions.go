@@ -56,10 +56,12 @@ func init(){
       switch v {
         case "__ARG":
           w.nextcallparam.i = append(w.nextcallparam.i,id)
+          chat("Argument ",id.itype,string(args[1])," added for next call")
           return true
         default:
           kut:=&w.identifiers.i
           (*kut)[v]=id
+          chat("Value ",string(args[1]),"("+id.itype+")"," assigned to variable ",v)
           return true
         }
     },
