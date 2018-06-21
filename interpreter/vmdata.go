@@ -90,8 +90,8 @@ func (self *VM) Call(chunk string) (bool,string){
   if !self.callChunk(chunk) { return false,"Call to chunk "+chunk+" failed!"; }
   rsuccess:=true
   err:=""
-  nc:=self.calls[len(self.calls)-1]
   for len(self.calls)>=0{
+	  nc:=self.calls[len(self.calls)-1]
       if len(nc.achunk.instruction)<=nc.pos { panic(fmt.Sprintf("Position past chunk end: %d of %d",nc.pos,len(nc.achunk.instruction)))}
       insl:=nc.achunk.instruction[nc.pos]
       insn:=insl.ins

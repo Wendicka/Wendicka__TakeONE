@@ -20,6 +20,11 @@ func main(){
       fmt.Println("\t"+e.Error())
       os.Exit(1)
     }
-    w.Call("MAIN")
+    ok,err:=w.Call("MAIN")
+    if !ok {
+		fmt.Println("Runtime error:")
+		fmt.Println("\t"+err)
+		os.Exit(2)
+	}
   }
 }
