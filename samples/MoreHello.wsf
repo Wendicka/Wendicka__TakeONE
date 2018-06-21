@@ -1,0 +1,15 @@
+CHUNK HELLOWORLD
+	mov $__ARG,"Hello, world"
+	call PRINT
+
+Chunk Wendicka
+	move $__ARG,"This code has been written with Wendicka!"
+	mov $__ARG,"This is just an experimental engine"
+	call PRINT
+	mov $__ARG,"What will I do with this engine?"
+	call PRINT
+	mov $__ARG,"I dunno, we'll find out later"
+
+Chunk MAIN
+	call HELLOWORLD
+	CaLl Wendicka
