@@ -1,0 +1,14 @@
+# This program will just demonstrate counting from 0 till 10
+
+chunk MAIN
+	MOVE $C,-1
+	LABEL Again
+	INC $C,1
+	MOV $__ARG,"Let's count: "
+	MOV $__ARG,$C
+	CALL PRINT
+	CHECK $C,<,10
+	PJump Again
+	MOV $__ARG,"That's it!"
+	CALL PRINT
+
