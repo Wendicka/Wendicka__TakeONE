@@ -62,6 +62,7 @@ type tcall struct{
 
 type tchunk struct {
   instruction []*tchunkins
+  labels map[string] int
 }
 
 type VM struct{
@@ -73,6 +74,7 @@ type VM struct{
     ccall int
     nextcallparam *argquery
     lastcallreturn *argquery
+    lastcompare bool
 }
 
 func (self *VM) callChunk(chunk string) bool{

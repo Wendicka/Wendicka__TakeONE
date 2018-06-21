@@ -88,6 +88,41 @@ func init(){
     },
     []string{"string"},
   }
+  
+  // Jump
+  winstructs[0xfd] = &winstruct{
+	  func(w *VM,args [][]byte) bool{
+		  l:=string(args[0])
+		  cll:=len(w.calls)-1
+		  cl:=w.calls[cll]
+		  ch:=cl.achunk
+		  pos,ok:=ch.labels[l]
+		  if !ok { wError("Jump to non-existent label: "+l); return false }
+		  cl.pos=pos-1 // -1 has to be taken in order for the pos++ instruction that always comes next!
+		  return true
+	  },
+	  []string{"string"},  
+  }
+  
+  // Conditional jumping
+  winstructs[252] = &winstruct{ // false
+	  func(w *VM,args [][]byte) bool{
+		  if !w.lastcompare {
+			  d:=winstructs[0xfd]
+			  return d.do_it(w,args)
+		  } else { return true }
+	  },
+	  []string{"string"},  
+  }
+  winstructs[251] = &winstruct{ // true
+	  func(w *VM,args [][]byte) bool{
+		  if w.lastcompare {
+			  d:=winstructs[0xfd]
+			  return d.do_it(w,args)
+		  } else { return true }
+	  },
+	  []string{"string"},  
+  }
 
   // END CALL
   winstructs[0xff] = &winstruct{

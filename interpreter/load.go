@@ -37,8 +37,14 @@ func Bytes2VM(l []byte) (*VM,error){
         namechunk:=qff.ReadString(bt)
         if _,exist:=ret.chunks[namechunk];exist { return nil,errors.New("Duplicate chunk: "+namechunk)}
         ret.chunks[namechunk]=&tchunk{}
+        ret.chunks[namechunk].labels = map[string] int{}
         readchunk=namechunk
         chat("Created chunk: ",namechunk)
+      case 254:
+        namelabel:=qff.ReadString(bt)
+        ch:=ret.chunks[readchunk]
+        ch.labels[namelabel]=len(ch.instruction)
+        chat("= Created label in chunk ",readchunk," named ",namelabel," as position ",fmt.Sprintf("%d",ch.labels[namelabel]))
       default:
         q,ok:=winstructs[ins]
         if !ok { return nil,errors.New(fmt.Sprintf("Unknown instruction %X",ins))}

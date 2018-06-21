@@ -200,8 +200,21 @@ func Compile_Lines(source []string,f string) ([]byte,error){
               chunklabels=map[string]int{}
             case "LABEL":
               if len(args)<1 { return nil,qe(f,lnum,"LABEL needs a name")}
-              //chunklabels[args[0]]=(len(ret)-chunkpos)
+              if _,labfound:=chunklabels[args[0]];labfound {
+				  return nil,qe(f,lnum,"Duplicate label: "+args[0])
+			  }
+              chunklabels[args[0]]=(len(ret)-chunkpos)              
               ret = append(ret,254)
+              ret = appstring(ret,args[0])
+            case "NJUMP","NJMP","FJUMP","FJMP":
+              if len(args)<1 { return nil,qe(f,lnum,"NEGATIVE JUMP needs a label name")}
+              //chunklabels[args[0]]=(len(ret)-chunkpos)
+              ret = append(ret,252)
+              ret = appstring(ret,args[0])              
+            case "PJUMP","PJMP","TJUMP","TJMP":
+              if len(args)<1 { return nil,qe(f,lnum,"POSITIVE JUMP needs a label name")}
+              //chunklabels[args[0]]=(len(ret)-chunkpos)
+              ret = append(ret,251)
               ret = appstring(ret,args[0])
             case "JUMP","JMP":
               if len(args)<1 { return nil,qe(f,lnum,"JUMP needs a label name")}
