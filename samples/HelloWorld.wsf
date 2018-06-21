@@ -1,0 +1,9 @@
+# Just a simple Hello World Test Program
+
+	CHUNK MAIN
+		MOV $__ARG,"HELLO, WORLD!"
+		CALL PRINT
+
+  CHUNK IGNORE_ME
+	  MOV $_ARG,"I TOLD YOU TO IGNORE ME!"
+		CALL PRINT
