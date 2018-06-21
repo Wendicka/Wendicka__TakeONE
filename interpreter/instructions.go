@@ -3,6 +3,7 @@ package wi
 import(
   "trickyunits/qint"
   "errors"
+  "fmt"
 )
 
 type winstruct struct {
@@ -29,6 +30,7 @@ func igidentifier(w *VM,b[]byte) (*tIdentifier,error){
       r:=tIdentifier{}
       r.itype="integer"
       r.vint,e=qint.BytesToInt64(p)
+      //fmt.Println("Form integer",b,i,p,r.vint)
       return &r,e
     case 3:
       var e error
@@ -62,12 +64,98 @@ func init(){
         default:
           kut:=&w.identifiers.i
           (*kut)[v]=id
-          chat("Value ",string(args[1]),"("+id.itype+")"," assigned to variable ",v)
+          chat("Value ",string(args[1]),"("+id.itype+")"," assigned to variable ",v,fmt.Sprintf("%d",id.vint))
           return true
         }
     },
     []string{"string","identifier"},
   }
+
+  winstructs[2] = &winstruct{
+    // INC
+    func (w *VM,args [][]byte) bool{
+      v:=string(args[0])
+      if args[0][0]!='$' {
+        wError("Invalid MOV! "+v)
+        return false
+      }
+      if len(args)<=1 { wError("No values received to alter: "+string(args[0])); return false}
+      vr,ok:=w.identifiers.i[string(args[0])]
+      if !ok { wError("Non-existent variable "+string(args[0])+" cannot be altered"); return false}
+      ch,e:=igidentifier(w,args[1])
+      if e!=nil { wError(e.Error()); return false;}
+      switch(vr.itype){
+		case "integer":
+			switch(ch.itype){
+				case "integer":
+					vr.vint += ch.vint
+				case "float":
+					vr.vint += int64(ch.vfloat)
+				default:
+					wError("I cannot alter a "+vr.itype+" with a "+ch.itype)
+					return false
+			}
+		case "float":
+			switch(ch.itype){
+				case "integer":
+					vr.vfloat += float64(ch.vint)
+				case "float":
+					vr.vfloat += ch.vfloat
+				default:
+					wError("I cannot alter a "+vr.itype+" with a "+ch.itype)
+					return false
+			}
+		default:
+			wError("Illegal identifier for INC "+vr.itype)
+			return false
+		}
+      return true
+	  },
+    []string{"string","identifier"},
+  }
+  winstructs[3] = &winstruct{
+    // DEC
+    func (w *VM,args [][]byte) bool{
+      v:=string(args[0])
+      if args[0][0]!='$' {
+        wError("Invalid MOV! "+v)
+        return false
+      }
+      if len(args)<=1 { wError("No values received to alter: "+string(args[0])); return false}
+      vr,ok:=w.identifiers.i[string(args[0])]
+      if !ok { wError("Non-existent variable "+string(args[0])+" cannot be altered"); return false}
+      ch,e:=igidentifier(w,args[1])
+      if e!=nil { wError(e.Error()); return false;}
+      switch(vr.itype){
+		case "integer":
+			switch(ch.itype){
+				case "integer":
+					vr.vint -= ch.vint
+				case "float":
+					vr.vint -= int64(ch.vfloat)
+				default:
+					wError("I cannot alter a "+vr.itype+" with a "+ch.itype)
+					return false
+			}
+		case "float":
+			switch(ch.itype){
+				case "integer":
+					vr.vfloat -= float64(ch.vint)
+				case "float":
+					vr.vfloat -= ch.vfloat
+				default:
+					wError("I cannot alter a "+vr.itype+" with a "+ch.itype)
+					return false
+			}
+		default:
+			wError("Illegal identifier for INC "+vr.itype)
+			return false
+		}
+      return true
+    },
+    []string{"string","identifier"},
+  }
+
 
   // CALL
   winstructs[10] = &winstruct{
@@ -87,6 +175,90 @@ func init(){
       return true
     },
     []string{"string"},
+  }
+  // Check
+  winstructs[250] = &winstruct{
+	  func(w *VM, args[][]byte) bool{
+		  id1,e1:=igidentifier(w,args[1])
+		  id2,e2:=igidentifier(w,args[2])
+		  d:=args[0][0]
+		  if e1!=nil { wError("CHECK#1"+e1.Error()); return false; }
+		  if e2!=nil { wError("CHECK#2"+e2.Error()); return false; }
+		  switch d{
+			  case 0,1:
+				if id1.itype==id2.itype && id1.itype=="string" { 
+					w.lastcompare=id1.vstring == id2.vstring
+				} else if id1.itype==id2.itype && id1.itype=="integer" {
+					w.lastcompare=id1.vint == id2.vint
+				} else if id1.itype==id2.itype && id1.itype=="float" {
+					w.lastcompare=id1.vfloat == id2.vfloat
+				} else {
+					fmt.Println("WARNING! Unsupported compare ("+id1.itype+"<=>"+id2.itype+")")
+					w.lastcompare = false
+				}
+				if d==1 { w.lastcompare=!w.lastcompare }
+			  case 3:
+				if id1.itype==id2.itype && id1.itype=="integer" {
+					w.lastcompare = id1.vint < id2.vint
+					chat(fmt.Sprintf("%s %d < %s %d ",id1.itype,id1.vint,id2.itype,id2.vint))
+				} else if id1.itype==id2.itype && id1.itype=="float" {
+					w.lastcompare = id1.vfloat < id2.vfloat
+				} else if id1.itype=="float" && id2.itype=="integer" {
+					w.lastcompare = id1.vfloat < float64(id2.vint)
+				} else if id1.itype=="float" && id2.itype=="integer" {
+					w.lastcompare = float64(id1.vint) < id2.vfloat
+				} else {
+					fmt.Println("WARNING! Unsupported smaller compare ("+id1.itype+"<=>"+id2.itype+")")
+					w.lastcompare = false
+				}
+			  case 4:
+				if id1.itype==id2.itype && id1.itype=="integer" {
+					w.lastcompare = id1.vint > id2.vint
+				} else if id1.itype==id2.itype && id1.itype=="float" {
+					w.lastcompare = id1.vfloat > id2.vfloat
+				} else if id1.itype=="float" && id2.itype=="integer" {
+					w.lastcompare = id1.vfloat > float64(id2.vint)
+				} else if id1.itype=="float" && id2.itype=="integer" {
+					w.lastcompare = float64(id1.vint) > id2.vfloat
+				} else {
+					fmt.Println("WARNING! Unsupported greater compare ("+id1.itype+"<=>"+id2.itype+")")
+					w.lastcompare = false
+				}
+			  case 5:
+				if id1.itype==id2.itype && id1.itype=="integer" {
+					w.lastcompare = id1.vint >= id2.vint
+				} else if id1.itype==id2.itype && id1.itype=="float" {
+					w.lastcompare = id1.vfloat >= id2.vfloat
+				} else if id1.itype=="float" && id2.itype=="integer" {
+					w.lastcompare = id1.vfloat >= float64(id2.vint)
+				} else if id1.itype=="float" && id2.itype=="integer" {
+					w.lastcompare = float64(id1.vint) >= id2.vfloat
+				} else {
+					fmt.Println("WARNING! Unsupported greater equal compare ("+id1.itype+"<=>"+id2.itype+")")
+					w.lastcompare = false
+				}
+			  case 6:
+				if id1.itype==id2.itype && id1.itype=="integer" {
+					w.lastcompare = id1.vint <= id2.vint
+				} else if id1.itype==id2.itype && id1.itype=="float" {
+					w.lastcompare = id1.vfloat <= id2.vfloat
+				} else if id1.itype=="float" && id2.itype=="integer" {
+					w.lastcompare = id1.vfloat <= float64(id2.vint)
+				} else if id1.itype=="float" && id2.itype=="integer" {
+					w.lastcompare = float64(id1.vint) <= id2.vfloat
+				} else {
+					fmt.Println("WARNING! Unsupported smaller equal compare ("+id1.itype+"<=>"+id2.itype+")")
+					w.lastcompare = false
+				}
+			  default:
+				wError(fmt.Sprintf("Unknown comparing code: %d!",d))
+				return false
+		  }
+		  chat(fmt.Sprintf("d = %d #%d",d,len(args[0])))
+		  if w.lastcompare { chat("CHECK = TRUE"); } else { chat("CHECK = FALSE"); }
+		  return true
+	  },
+	  []string{"byte","identifier","identifier"},
   }
   
   // Jump

@@ -29,10 +29,10 @@ func (self *VM) ID_ConvString(id *tIdentifier) string{
     return "nil"
   case "string":
     return id.vstring
-  case "int":
-    return fmt.Sprint("%d",id.vint)
+  case "int","integer":
+    return fmt.Sprintf("%d",id.vint)
   case "bool","boolean":
-    if id.vint<=0 { return "false"; } else { return "true";}
+    if id.vint<=0 { return "false"; } else { return "true"; }
   case "float":
       return fmt.Sprint("%f",id.vfloat)
   case "chunk","function","procedure","api","table":

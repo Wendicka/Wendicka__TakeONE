@@ -54,6 +54,10 @@ func Bytes2VM(l []byte) (*VM,error){
             case "string":
               s:= qff.ReadString(bt)
               a = append(a,[]byte(s))
+            case "byte":
+			  b:= qff.ReadByte(bt)
+			  c:= []byte{b}
+			  a = append(a,c)
             case "identifier":
               b:=[]byte{}
               t:=qff.ReadByte(bt)

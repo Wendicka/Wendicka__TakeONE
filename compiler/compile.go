@@ -30,6 +30,7 @@ func qe(f string,l int, er string) error{
   return errors.New(eh(f,l,er))
 }
 
+
 func appstring(ori []byte,s string) []byte {
   ret:=ori
   lb,_:= qint.Int32toBytes(int32(len(s)))
@@ -100,7 +101,7 @@ func appparam(ori []byte,param string) ([]byte,error) {
     i, err = strconv.ParseInt(param, 10, 64)
     ret=append(ret,2)
     ret=appint64(ret,i)
-
+    //fmt.Println("DEBUG int: ",i,ret)
   }
   return ret,err
 }
@@ -108,6 +109,31 @@ func appparam(ori []byte,param string) ([]byte,error) {
 func chat(a string){
    if CHAT { fmt.Print(a)}
 }
+
+/*
+ * Instructions
+ *   0 = CHUNK
+ *   1 = MOVE
+ *   2 = INC
+ *   3 = DEC
+ *   4 = SUM
+ *   5 = DIFFERENCE
+ *   6 = MULTIPLY
+ *   7 = DIVIDE
+ *  10 = CALL
+ * 250 = CHECK
+ *       0. ==
+ *       1. =/=
+ *       3. <
+ *       4. >
+ *       5. >=
+ *       6. <=
+ * 251 = PJUMP
+ * 252 = NJUMP
+ * 253 = JUMP
+ * 254 = LABEL
+ * 255 = EXIT CHUNK
+ */
 
 func Compile_Lines(source []string,f string) ([]byte,error){
     chunk:=""
@@ -206,6 +232,35 @@ func Compile_Lines(source []string,f string) ([]byte,error){
               chunklabels[args[0]]=(len(ret)-chunkpos)              
               ret = append(ret,254)
               ret = appstring(ret,args[0])
+            case "CHECK","COMPARE","CHK","CMP":
+              if len(args)<3 { return nil,qe(f,lnum,"CHECK requires THREE parameters") }
+              c:=map[string] byte{}
+              c["="] = 0
+              c["=="] = 0
+              c["IS"] = 0
+              c["EQUAL"] = 0
+              c["EQUALS"] = 0
+              c["<>"]=1
+              c["!="]=1
+              c["=/="]=1
+              c["~="]=1
+              c["ISNOT"]=1
+              c["<"]=3
+              c["SMALLERTHAN"]=3
+              c[">"]=4
+              c["GREATERTHAN"]=4
+              c[">="]=5
+              c["<="]=6
+              chk:=strings.ToUpper(args[1])
+              cn,have:=c[chk]
+              //fmt.Println(chk,cn,have)
+              if !have { return nil,qe(f,lnum,"CHECK type "+chk+" has not been understood") }              
+              ret = append(ret,250)
+              ret = append(ret,cn)
+              ret,err = appparam(ret,args[0])
+              if err==nil {
+              ret,err = appparam(ret,args[2])
+		      }
             case "NJUMP","NJMP","FJUMP","FJMP":
               if len(args)<1 { return nil,qe(f,lnum,"NEGATIVE JUMP needs a label name")}
               //chunklabels[args[0]]=(len(ret)-chunkpos)
