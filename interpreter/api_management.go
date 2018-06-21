@@ -73,7 +73,7 @@ func wi_api_print(w *VM) (bool,string){
   r:=[]string{}
   // form this dline
   l:=w.Arg_Count()
-  for j:=1;j<=l;j++{
+  for j:=0;j<l;j++{
     r=append(r,w.Arg_ConvString(j))
   }
   // execute

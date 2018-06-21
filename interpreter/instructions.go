@@ -55,7 +55,7 @@ func init(){
       id,e:=igidentifier(w,args[1])
       if e!=nil { wError(e.Error()); return false;}
       switch v {
-        case "__ARG":
+        case "$__ARG":
           w.nextcallparam.i = append(w.nextcallparam.i,id)
           chat("Argument ",id.itype,string(args[1])," added for next call")
           return true

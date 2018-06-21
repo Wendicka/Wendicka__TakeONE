@@ -3,7 +3,7 @@ package wi
 import "fmt"
 
 // When set "true" all kinds of needless debugshit will be displayed
-var DebugCHAT = true
+var DebugCHAT = false
 
 
 func chat(crap ...string){

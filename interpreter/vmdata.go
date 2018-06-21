@@ -98,6 +98,7 @@ func (self *VM) Call(chunk string) (bool,string){
       insa:=insl.param
       insd,insf:=winstructs[insn]
       if !insf { panic( fmt.Sprintf("FATAL INTERNAL ERROR! Unknown instruction code in execution %X/%d\nPlease report",insn,insn));}
+      chat("Executing instruction: ",fmt.Sprintf("%d",insn))
       insd.do_it(self,insa)
       nc.pos++
       if nc.pos>=len(nc.achunk.instruction) { return false,"Chunk not properly ended";}
@@ -110,9 +111,18 @@ func (self *VM) callAPI(chunk string) (bool,string){
   err:=""
   a:=self.vapi.fs
   f,ok:=(*a)[chunk]
+  ncall:=&tcall{}
+  ncall.chunk=chunk
+  ncall.params=self.nextcallparam
+  self.calls = append(self.calls,ncall)
+  self.ccall = len(self.calls)-1
+  if ncall.params==nil { chat("WARNING!","Param field is nil")}
   if !ok { return false,"Unknown API called: "+chunk;}
   if f.f==nil { return false,"API nilfunc in "+chunk}
   rsuccess,err = f.f(self)
+  self.calls = self.calls[:len(self.calls)-1]
+  self.ccall = len(self.calls)-1
+  self.lastcallreturn = ncall.returns
   return rsuccess,err
 }
 
@@ -130,6 +140,8 @@ func (self *VM) Init(a *API){
   self.identifiers.i = ti
   self.chunks = map[string] *tchunk {}
   self.calls = []*tcall{}
+  self.nextcallparam = &argquery{}
+  self.lastcallreturn = &argquery{}
 }
 
 // Normally every VM creates its own API register, but if you have multiple VMS all using the same API, why bother?
