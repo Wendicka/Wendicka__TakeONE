@@ -78,7 +78,7 @@ func wi_api_print(w *VM) (bool,string){
   }
   // execute
   for i,v := range r {
-    if i==0 { fmt.Print("\t"); }
+    if i!=0 { fmt.Print("\t"); }
     fmt.Print(v)
   }
 
