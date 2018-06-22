@@ -120,6 +120,8 @@ func chat(a string){
  *   5 = DIFFERENCE
  *   6 = MULTIPLY
  *   7 = DIVIDE
+ *   8 = RAWINPUT
+ *   9 = RAWINTINPUT
  *  10 = CALL
  * 250 = CHECK
  *       0. ==
@@ -163,7 +165,7 @@ func Compile_Lines(source []string,f string) ([]byte,error){
            cara:=[]byte{}
            for i:=0;i<len(ara);i++{
                if bs {
-                 switch(ara[1]){
+                 switch(ara[i]){
                  case 'b','B': cara = append(cara,8)
                  case 'n','N': cara = append(cara,10)
                  case 'r','R': cara = append(cara,13)
@@ -261,6 +263,16 @@ func Compile_Lines(source []string,f string) ([]byte,error){
               if err==nil {
               ret,err = appparam(ret,args[2])
 		      }
+		    case "RAWINPUT":
+              if len(args)<1 { return nil,qe(f,lnum,"RAWINPUT needs a variable name")}
+              //chunklabels[args[0]]=(len(ret)-chunkpos)
+              ret = append(ret,8)
+              ret = appstring(ret,args[0])
+		    case "RAWINTINPUT":
+              if len(args)<1 { return nil,qe(f,lnum,"RAWINTINPUT needs a variable name")}
+              //chunklabels[args[0]]=(len(ret)-chunkpos)
+              ret = append(ret,9)
+              ret = appstring(ret,args[0])
             case "NJUMP","NJMP","FJUMP","FJMP":
               if len(args)<1 { return nil,qe(f,lnum,"NEGATIVE JUMP needs a label name")}
               //chunklabels[args[0]]=(len(ret)-chunkpos)

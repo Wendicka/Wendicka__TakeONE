@@ -2,6 +2,8 @@ package wi
 
 import(
   "trickyunits/qint"
+  "trickyunits/qstr"
+  "strconv"
   "errors"
   "fmt"
 )
@@ -155,6 +157,81 @@ func init(){
     },
     []string{"string","identifier"},
   }
+  winstructs[6] = &winstruct{
+	  func (w *VM,args[][]byte) bool{
+		  id1,e1:=igidentifier(w,args[1])
+		  id2,e2:=igidentifier(w,args[2])
+		  if e1!=nil { wError("ID1,MUL:\t"+e1.Error()); return false }
+		  if e2!=nil { wError("ID2,MUL:\t"+e2.Error()); return false }
+		  if id1==nil { wError("MUL.ID1==nil"); return false }
+		  if id2==nil { wError("MUL.ID2==nil"); return false }
+		  uitkomst:=&tIdentifier{}
+		  if args[0][0]!='$' { wError("MULTIPLY requires variable to store the result!"); return false}
+		  sarg:=string(args[0])
+		  if id1.itype=="integer" && id2.itype=="integer" {
+			uitkomst.itype="integer"
+			uitkomst.vint=id1.vint*id2.vint
+		  } else {
+			p1:=float64(0)
+			p2:=float64(0)
+			if id1.itype=="float" { p1=id1.vfloat
+			} else if id1.itype=="integer" { p1=float64(id1.vint)
+			} else { wError("1st value for multiplication is invalid: "+id1.itype); return false}
+			if id2.itype=="float" { p2=id2.vfloat
+			} else if id2.itype=="integer" { p2=float64(id2.vint)
+			} else { wError("2nd value for multiplication is invalid: "+id2.itype); return false}
+			uitkomst.itype="float"
+			uitkomst.vfloat=p1*p2
+		  }
+		  store:=&w.identifiers.i
+		  (*store)[sarg]=uitkomst
+		  return true
+	  },[]string{"string","identifier","identifier"},
+  }
+  
+  winstructs[8] = &winstruct{
+	  func (w *VM,args[][]byte) bool {
+		arg:=args[0]
+		sarg:=string(arg)
+		if arg[0]!='$' { wError("Raw input needs a VARIABLE to store the input in!"); return false }
+		answer:=qstr.RawInput("")
+		store:=&w.identifiers.i
+		id:=tIdentifier{}
+		id.itype="string"
+		id.vstring=answer
+		(*store)[sarg]=&id
+		return true
+	  },
+	  []string{"string"},
+  }
+
+  winstructs[9] = &winstruct{
+	  func (w *VM,args[][]byte) bool {
+		arg:=args[0]
+		sarg:=string(arg)
+		if arg[0]!='$' { wError("Raw int input needs a VARIABLE to store the input in!"); return false }
+		ok:=false
+		ia:=int64(0)
+		for !ok{
+			answer:=qstr.RawInput("")
+			a,e:=strconv.ParseInt(answer, 10, 64)
+			if e!=nil {
+				fmt.Print("Redo from start: "+e.Error())
+			} else {
+				ok=true
+				ia=a
+			}
+		}
+		store:=&w.identifiers.i
+		id:=tIdentifier{}
+		id.itype="integer"
+		id.vint=ia
+		(*store)[sarg]=&id
+		return true
+	  },
+	  []string{"string"},
+  }
+
 
 
   // CALL

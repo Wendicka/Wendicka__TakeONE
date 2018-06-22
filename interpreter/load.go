@@ -47,7 +47,7 @@ func Bytes2VM(l []byte) (*VM,error){
         chat("= Created label in chunk ",readchunk," named ",namelabel," as position ",fmt.Sprintf("%d",ch.labels[namelabel]))
       default:
         q,ok:=winstructs[ins]
-        if !ok { return nil,errors.New(fmt.Sprintf("Unknown instruction %X",ins))}
+        if !ok { return nil,errors.New(fmt.Sprintf("Unknown instruction: %2X/%3d",ins,ins))}
         a:=[][]byte {}//*tIdentifier{}
         for i,partype:=range q.needparam {
           switch partype {
