@@ -1,0 +1,69 @@
+Chunk Name
+	mov $__ARG,"Hi! My name's computer!\n\n"
+	mov $__ARG,"\n\nWhat's your name?"
+	call PRINT
+	RawInput $Name
+	
+chunk WhichTable
+	mov $__ARG,"Hello"
+	mov $__ARG,$Name
+	call PRINT
+	mov $__ARG,"Time for multiplication tables. Which one do you wanna do? (2-9)"
+	call PRINT
+	label again
+	rawintinput $tab
+	check $tab,<,2
+	PJump again
+	check $tab,>,9
+	PJump again
+	
+chunk Process
+	mov $s,1
+	mov $goed,0
+	mov $fout,0
+	label start
+	mov $__ARG,$s
+	mov $__ARG,"x"
+	mov $__ARG,$tab
+	mov $__ARG,"="
+	call PRINT
+	rawintinput $answer
+	mul $correctanswer,$s,$tab
+	check $answer,=,$correctanswer
+	pjump l_goed
+	jump l_fout
+	label l_goed
+		MOV $__ARG,"Correct!"
+		call PRINT
+		inc $goed,1
+		jump l_next
+	label l_fout
+		mov $__ARG,"That's not correct! The correct answer is:"
+		mov $__ARG,$correctanswer
+		call PRINT
+		inc $fout,1
+	label l_next
+		inc $s,1
+		check $s,<=,10
+		PJump start
+	
+chunk TheEnd
+	mov $__ARG,"Well, that was all of them,"
+	mov $__ARG,$Name
+	call PRINT
+	mov $__ARG,"\n\n\nYou gave me"
+	mov $__ARG,$goed
+	mov $__ARG,"correct answers"
+	call PRINT
+	mov $__ARG,$fout
+	mov $__ARG,"answers were wrong"
+	call PRINT
+	mov $__ARG,"I hope to see you again soon,"
+	mov $__ARG,$Name
+	call PRINT
+	
+Chunk MAIN
+	call Name
+	call WhichTable
+	call Process
+	call TheEnd
