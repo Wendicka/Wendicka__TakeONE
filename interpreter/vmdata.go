@@ -78,6 +78,10 @@ type VM struct{
 }
 
 func (self *VM) callChunk(chunk string) bool{
+   if MaxCallStack>0 && len(self.calls)>=MaxCallStack {
+	   wError("Call stack has reached the limit!")
+	   return false
+   }
    ncall:=&tcall{}
    ncall.pos=0
    ncall.chunk=chunk
