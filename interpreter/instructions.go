@@ -253,6 +253,28 @@ func init(){
     },
     []string{"string"},
   }
+  // Something
+  winstructs[249] = &winstruct{
+	  func (w *VM, args[][]byte) bool{
+		  id,e:=igidentifier(w,args[1])
+		  if e!=nil { wError(e.Error()); return false }
+		  switch id.itype {
+			  case "nil":
+				w.lastcompare = false
+			  case "int","integer","bool","boolean":
+				w.lastcompare = id.vint>0
+			  case "float":
+				w.lastcompare = id.vfloat>0
+			  case "string":
+				w.lastcompare = id.vstring!=""
+			  default:
+			    fmt.Print("WARNING! SOMETHING type unknown: "+id.itype)
+			}
+		  return true
+		  },
+		  []string{"identifier"},
+  }
+  
   // Check
   winstructs[250] = &winstruct{
 	  func(w *VM, args[][]byte) bool{
