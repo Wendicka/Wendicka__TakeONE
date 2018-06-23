@@ -1,0 +1,55 @@
+# A little bit of math
+
+
+chunk MAIN
+	call PI
+	getret $PI,0
+	mov $__ARG,"Pi"
+	mov $__ARG,"="
+	mov $__ARG,$PI
+	call PRINT
+	
+	mov $i,0
+	label loop
+	
+	# mov $__ARG,$i
+	mov $__ARG,"\n\n  Number is:"
+	mov $__ARG,$i
+	call PRINT
+	
+	mov $__ARG,$i
+	call SIN
+	getret $r,0
+	mov $__ARG,"       Sine:"
+	mov $__ARG,$r
+	call PRINT
+	
+	mov $__ARG,$i
+	call COS
+	getret $r,0
+	mov $__ARG,"     Cosine:"
+	mov $__ARG,$r
+	call PRINT
+	
+	
+	mov $__ARG,$i
+	call TAN
+	getret $r,0
+	mov $__ARG,"    Tangent:"
+	mov $__ARG,$r
+	call PRINT
+	
+	mov $__ARG,$i
+	call SQR
+	getret $r,0
+	mov $__ARG,"Square Root:"
+	mov $__ARG,$r
+	call PRINT
+
+	inc $i,1
+	check $i,<=,100
+	pjump loop
+	
+	mov $__ARG,"\n\nWell?"
+	call PRINT
+end

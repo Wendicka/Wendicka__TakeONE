@@ -35,7 +35,7 @@ func (self *VM) ID_ConvString(id *tIdentifier) string{
   case "bool","boolean":
     if id.vint<=0 { return "false"; } else { return "true"; }
   case "float":
-      return fmt.Sprint("%f",id.vfloat)
+      return fmt.Sprintf("%f",id.vfloat)
   case "chunk","function","procedure","api":
     return "<<"+id.itype+":"+id.vstring+">>"
   case "table","array":
@@ -68,7 +68,7 @@ func (self *VM) Arg_GetString(i int) string {
 		case "bool","boolean":
 			if id.vint<=0 { return "false"; } else { return "true"; }
 		case "float":
-			return fmt.Sprint("%f",id.vfloat)
+			return fmt.Sprintf("%f",id.vfloat)
 		default:
 			wError(fmt.Sprintf("String expected for argument #%d, but what I got is %s!",i+1,id.itype))
 			return ""
@@ -221,4 +221,5 @@ func wi_api_replace(w *VM) (bool,string){
 func (w *API) minapi(){
   w.Register("PRINT",wi_api_print)
   w.Register("REPLACE",wi_api_replace)
+  wim_init(w)
 }
