@@ -53,6 +53,7 @@ Commands:
 - RETURN value
   - Set the return value(s) for exiting this chunk
   - Please note, you *can* return multiple values, by just adding multiple RETURN commands
+  - Return values always come in the same order as they are assigned.
   - Also note that unlike languages such a C,C++,Java,php,Go,BlitzMax,Lua and many others, the RETURN command will in Wendicka NOT end the chunk execution. If this has to happen after return you ARE required to use an EXIT command next. That is neither a bug nor an oversight, but done deliberately!!
 - SOMETHING $var
   - set the last check to "true" if:
