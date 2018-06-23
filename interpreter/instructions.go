@@ -41,7 +41,8 @@ func igidentifier(w *VM,b[]byte) (*tIdentifier,error){
       r.vfloat,e=qint.BytesToFloat(p)
       return &r,e
     default:
-      return nil,errors.New("Unknown Identifier Code. Either the code is compiled incorrectly, or the code is corrupt, or your version of Wendicka is too old for this particular code.")
+      fmt.Print(b)
+      return nil,errors.New(fmt.Sprintf("Unknown Identifier Code. Either the code is compiled incorrectly, or the code is corrupt, or your version of Wendicka is too old for this particular code. (%3d)",i))
   }
   return nil,errors.New("I'm completely at a loss. This error could only happen to either a bug or an outdated version of Wendicka.")
 }
@@ -243,6 +244,32 @@ func init(){
 			return true
 		},[]string{"identifier"},
   }
+  // GETRET
+  winstructs[12] = &winstruct{
+		func(w *VM,args[][]byte) bool {      
+			v:=string(args[0])
+			if args[0][0]!='$' {
+				wError("Invalid GETRET! "+v)
+				return false
+			}
+		if len(args)<2 { wError("GETRET error!  "+string(args[1])); return false}
+		//id,e:=igidentifier(w,args[1])
+		//if e!=nil { wError(e.Error()); return false;}
+		idnum,e:=igidentifier(w,args[1])
+		if e!=nil { wError(e.Error()); return false}
+		if idnum.itype!="integer" { wError("Return index must be integer"); return false}
+		inum:=int(idnum.vint)
+		if inum>=len(w.lastcallreturn.i) { wError("Return data out of range"); return false}
+		id:=w.lastcallreturn.i[inum]
+		if qstr.Prefixed(v,"$__") { wError("GETRET may not be used with potential reserved variables!"); return false }
+		kut:=&w.identifiers.i
+		(*kut)[v]=id
+		//chat("Value ",string(args[1]),"("+id.itype+")"," assigned to variable ",v,fmt.Sprintf("%d",id.vint))
+		return true
+        },
+		[]string{"string","identifier"},
+  }
+
 
 
   // CALL

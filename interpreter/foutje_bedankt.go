@@ -53,6 +53,14 @@ func init(){
 
 }
 
+func hError() string{
+	return Werror
+}
+
+func TBError() (bool,string){
+	return Werror=="",Werror
+}
+
 func wError(e string){
   hwerror[Werhand].f(e)
 }

@@ -86,6 +86,7 @@ func (self *VM) callChunk(chunk string) bool{
    ncall.pos=0
    ncall.chunk=chunk
    ncall.params=self.nextcallparam
+   ncall.returns=&argquery{}
    self.calls = append(self.calls,ncall)
    self.ccall = len(self.calls)-1
    achunk,ok:=self.chunks[chunk]
@@ -123,6 +124,7 @@ func (self *VM) callAPI(chunk string) (bool,string){
   ncall:=&tcall{}
   ncall.chunk=chunk
   ncall.params=self.nextcallparam
+  ncall.returns=&argquery{}
   self.calls = append(self.calls,ncall)
   self.ccall = len(self.calls)-1
   if ncall.params==nil { chat("WARNING!","Param field is nil")}

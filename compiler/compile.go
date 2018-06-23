@@ -86,7 +86,7 @@ func appparam(ori []byte,param string) ([]byte,error) {
     i, err = strconv.ParseInt(param[2:], 16, 64)
     ret=append(ret,2)
     ret=appint64(ret,i)
-  } else if qstr.Prefixed(param,"0") {
+  } else if len(param)>1 && qstr.Prefixed(param,"0") {
       var i int64
       i, err = strconv.ParseInt(param[1:], 8, 64)
       ret=append(ret,2)
@@ -124,6 +124,7 @@ func chat(a string){
  *   9 = RAWINTINPUT
  *  10 = CALL
  *  11 = RETURN
+ *  12 = GETRET
  * 249 = SOMETHING
  * 250 = CHECK
  *       0. ==
@@ -256,6 +257,7 @@ func Compile_Lines(source []string,f string) ([]byte,error){
               c[">="]=5
               c["<="]=6
               chk:=strings.ToUpper(args[1])
+              chk=strings.Replace(chk,"\"","",-1)
               cn,have:=c[chk]
               //fmt.Println(chk,cn,have)
               if !have { return nil,qe(f,lnum,"CHECK type "+chk+" has not been understood") }              
@@ -270,9 +272,14 @@ func Compile_Lines(source []string,f string) ([]byte,error){
 				ret = append(ret,9)
 				ret,err = appparam(ret,args[0])
 		    case "RETURN": // If a string is not empty lastcheck true. If boolean is true, or if nummeric value is more than 0 true. If chunk true of chunk exists, and if table pointer, true of table record exists.
-				if len(args)<1 { return nil,qe(f,lnum,"SOMETHING needs a variable or any value to check")}
+				if len(args)<1 { return nil,qe(f,lnum,"RETURN needs a variable or any value to return")}
 				ret = append(ret,11)
 				ret,err = appparam(ret,args[0])
+		    case "GETRET": // If a string is not empty lastcheck true. If boolean is true, or if nummeric value is more than 0 true. If chunk true of chunk exists, and if table pointer, true of table record exists.
+				if len(args)<2 { return nil,qe(f,lnum,"GETRET needs a variable and an index to check")}
+				ret = append(ret,12)
+				ret = appstring(ret,args[0])
+				ret,err = appparam(ret,args[1])
 		    case "RAWINPUT":
               if len(args)<1 { return nil,qe(f,lnum,"RAWINPUT needs a variable name")}
               //chunklabels[args[0]]=(len(ret)-chunkpos)

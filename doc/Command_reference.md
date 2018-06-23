@@ -35,6 +35,12 @@ Commands:
   - Quits the current chunk call and goes back to the parent chunk call
   - Can alternatively be replaced by its alias END
   - Whenever a new Chunk is created with the CHUNK command, this command is added to the previous chunk automatically
+- GETRET $var,$index
+  - Get the returned value
+  - First index number is 0
+  - When you try to get higher numbers than returned you'll get an error
+  - The returned values are index in the same order as they were defined with RETURN
+  - Of course, each time a chunk ends these are redefined  
 - INC $var,value
   - Increases $var by value
   - Only works on nummeric variables and values
