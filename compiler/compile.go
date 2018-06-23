@@ -123,6 +123,7 @@ func chat(a string){
  *   8 = RAWINPUT
  *   9 = RAWINTINPUT
  *  10 = CALL
+ *  11 = RETURN
  * 249 = SOMETHING
  * 250 = CHECK
  *       0. ==
@@ -267,6 +268,10 @@ func Compile_Lines(source []string,f string) ([]byte,error){
 		    case "SOMETHING": // If a string is not empty lastcheck true. If boolean is true, or if nummeric value is more than 0 true. If chunk true of chunk exists, and if table pointer, true of table record exists.
 				if len(args)<1 { return nil,qe(f,lnum,"SOMETHING needs a variable or any value to check")}
 				ret = append(ret,9)
+				ret,err = appparam(ret,args[0])
+		    case "RETURN": // If a string is not empty lastcheck true. If boolean is true, or if nummeric value is more than 0 true. If chunk true of chunk exists, and if table pointer, true of table record exists.
+				if len(args)<1 { return nil,qe(f,lnum,"SOMETHING needs a variable or any value to check")}
+				ret = append(ret,11)
 				ret,err = appparam(ret,args[0])
 		    case "RAWINPUT":
               if len(args)<1 { return nil,qe(f,lnum,"RAWINPUT needs a variable name")}
