@@ -234,7 +234,7 @@ func init(){
 
 
   // RETURN
-  winstructs[12] = &winstruct{
+  winstructs[11] = &winstruct{
 		func(w *VM,args[][]byte) bool {
 			cl:=w.calls[len(w.calls)-1]
 			r:=cl.returns
