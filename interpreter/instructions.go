@@ -233,6 +233,17 @@ func init(){
   }
 
 
+  // RETURN
+  winstructs[12] = &winstruct{
+		func(w *VM,args[][]byte) bool {
+			cl:=w.calls[len(w.calls)-1]
+			r:=cl.returns
+			i,_:=igidentifier(w,args[0])
+			r.i=append(r.i,i)
+			return true
+		},[]string{"identifier"},
+  }
+
 
   // CALL
   winstructs[10] = &winstruct{
@@ -256,7 +267,7 @@ func init(){
   // Something
   winstructs[249] = &winstruct{
 	  func (w *VM, args[][]byte) bool{
-		  id,e:=igidentifier(w,args[1])
+		  id,e:=igidentifier(w,args[0])
 		  if e!=nil { wError(e.Error()); return false }
 		  switch id.itype {
 			  case "nil":
