@@ -31,6 +31,10 @@ Commands:
 - DEC $var,value
   - Decreases $var by value
   - Only works on nummeric variables and values
+- EXIT
+  - Quits the current chunk call and goes back to the parent chunk call
+  - Can alternatively be replaced by its alias END
+  - Whenever a new Chunk is created with the CHUNK command, this command is added to the previous chunk automatically
 - INC $var,value
   - Increases $var by value
   - Only works on nummeric variables and values
@@ -46,6 +50,10 @@ Commands:
   - Assigns value to $var  
   - Assigning parameters to $__ARG and other reserved variables also works through this command.
   - Alternativeley you can also use the alias command MOV
+- RETURN value
+  - Set the return value(s) for exiting this chunk
+  - Please note, you *can* return multiple values, by just adding multiple RETURN commands
+  - Also note that unlike languages such a C,C++,Java,php,Go,BlitzMax,Lua and many others, the RETURN command will in Wendicka NOT end the chunk execution. If this has to happen after return you ARE required to use an EXIT command next. That is neither a bug nor an oversight, but done deliberately!!
 - SOMETHING $var
   - set the last check to "true" if:
     - The variable contains a nummeric value higher than 0
