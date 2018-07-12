@@ -1,7 +1,7 @@
 /*
   compile.go
   
-  version: 18.06.23
+  version: 18.07.12
   Copyright (C) 2018 Jeroen P. Broks
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -144,6 +144,7 @@ func chat(a string){
  *  10 = CALL
  *  11 = RETURN
  *  12 = GETRET
+ *  14 = GETARG
  * 249 = SOMETHING
  * 250 = CHECK
  *       0. ==
@@ -297,6 +298,11 @@ func Compile_Lines(source []string,f string) ([]byte,error){
 		    case "GETRET": // If a string is not empty lastcheck true. If boolean is true, or if nummeric value is more than 0 true. If chunk true of chunk exists, and if table pointer, true of table record exists.
 				if len(args)<2 { return nil,qe(f,lnum,"GETRET needs a variable and an index to check")}
 				ret = append(ret,12)
+				ret = appstring(ret,args[0])
+				ret,err = appparam(ret,args[1])
+		    case "GETARG": // If a string is not empty lastcheck true. If boolean is true, or if nummeric value is more than 0 true. If chunk true of chunk exists, and if table pointer, true of table record exists.
+				if len(args)<2 { return nil,qe(f,lnum,"GETARG needs a variable and an index to check")}
+				ret = append(ret,14)
 				ret = appstring(ret,args[0])
 				ret,err = appparam(ret,args[1])
 		    case "RAWINPUT":

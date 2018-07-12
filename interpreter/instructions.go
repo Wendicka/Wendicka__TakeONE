@@ -1,7 +1,7 @@
 /*
   instructions.go
   
-  version: 18.06.23
+  version: 18.07.12
   Copyright (C) 2018 Jeroen P. Broks
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -177,6 +177,38 @@ func init(){
     },
     []string{"string","identifier"},
   }
+  winstructs[4] = &winstruct{
+	  func (w *VM,args[][]byte) bool{
+		  id1,e1:=igidentifier(w,args[1])
+		  id2,e2:=igidentifier(w,args[2])
+		  if e1!=nil { wError("ID1,SUM:\t"+e1.Error()); return false }
+		  if e2!=nil { wError("ID2,SUM:\t"+e2.Error()); return false }
+		  if id1==nil { wError("MUL.ID1==nil"); return false }
+		  if id2==nil { wError("MUL.ID2==nil"); return false }
+		  uitkomst:=&tIdentifier{}
+		  if args[0][0]!='$' { wError("SUM requires variable to store the result!"); return false}
+		  sarg:=string(args[0])
+		  if id1.itype=="integer" && id2.itype=="integer" {
+			uitkomst.itype="integer"
+			uitkomst.vint=id1.vint+id2.vint
+		  } else {
+			p1:=float64(0)
+			p2:=float64(0)
+			if id1.itype=="float" { p1=id1.vfloat
+			} else if id1.itype=="integer" { p1=float64(id1.vint)
+			} else { wError("1st value for multiplication is invalid: "+id1.itype); return false}
+			if id2.itype=="float" { p2=id2.vfloat
+			} else if id2.itype=="integer" { p2=float64(id2.vint)
+			} else { wError("2nd value for multiplication is invalid: "+id2.itype); return false}
+			uitkomst.itype="float"
+			uitkomst.vfloat=p1+p2
+		  }
+		  store:=&w.identifiers.i
+		  (*store)[sarg]=uitkomst
+		  return true
+	  },[]string{"string","identifier","identifier"},
+  }
+  
   winstructs[6] = &winstruct{
 	  func (w *VM,args[][]byte) bool{
 		  id1,e1:=igidentifier(w,args[1])
@@ -281,6 +313,34 @@ func init(){
 		if inum>=len(w.lastcallreturn.i) { wError("Return data out of range"); return false}
 		id:=w.lastcallreturn.i[inum]
 		if qstr.Prefixed(v,"$__") { wError("GETRET may not be used with potential reserved variables!"); return false }
+		kut:=&w.identifiers.i
+		(*kut)[v]=id
+		//chat("Value ",string(args[1]),"("+id.itype+")"," assigned to variable ",v,fmt.Sprintf("%d",id.vint))
+		return true
+        },
+		[]string{"string","identifier"},
+  }
+
+
+  // GETARG
+  winstructs[14] = &winstruct{
+		func(w *VM,args[][]byte) bool {      
+			v:=string(args[0])
+			if args[0][0]!='$' {
+				wError("Invalid GETARG! "+v)
+				return false
+			}
+		if len(args)<2 { wError("GETRET error!  "+string(args[1])); return false}
+		//id,e:=igidentifier(w,args[1])
+		//if e!=nil { wError(e.Error()); return false;}
+		idnum,e:=igidentifier(w,args[1])
+		if e!=nil { wError(e.Error()); return false}
+		if idnum.itype!="integer" { wError("Argument index must be integer"); return false}
+		inum:=int(idnum.vint)
+		wcall:=w.calls[w.ccall]
+		if inum>=len(wcall.params.i) { wError("Return data out of range"); return false}
+		id:=wcall.params.i[inum]
+		if qstr.Prefixed(v,"$__") { wError("GETARG may not be used with potential reserved variables!"); return false }
 		kut:=&w.identifiers.i
 		(*kut)[v]=id
 		//chat("Value ",string(args[1]),"("+id.itype+")"," assigned to variable ",v,fmt.Sprintf("%d",id.vint))

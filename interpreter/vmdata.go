@@ -1,7 +1,7 @@
 /*
   vmdata.go
   
-  version: 18.06.23
+  version: 18.07.12
   Copyright (C) 2018 Jeroen P. Broks
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -110,6 +110,7 @@ func (self *VM) callChunk(chunk string) bool{
    self.ccall = len(self.calls)-1
    achunk,ok:=self.chunks[chunk]
    if ok { ncall.achunk=achunk}
+   self.nextcallparam=&argquery{}
    return ok
 }
 
